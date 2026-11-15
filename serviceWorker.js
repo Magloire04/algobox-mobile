@@ -1,7 +1,7 @@
 // Service worker : met l'application en cache pour qu'elle fonctionne hors ligne.
 // Changer CACHE_VERSION à chaque livraison pour renouveler le cache.
 
-const CACHE_VERSION = 'algobox-mobile-v2';
+const CACHE_VERSION = 'algobox-mobile-v3';
 const APP_SHELL = [
   './',
   'index.html',
@@ -10,6 +10,7 @@ const APP_SHELL = [
   'js/algoEngine.js',
   'js/exampleLibrary.js',
   'js/app.js',
+  'js/demoView.js',
   'js/commandPalette.js',
   'js/domHelpers.js',
   'js/exporters.js',
@@ -24,6 +25,8 @@ const APP_SHELL = [
   'app-icons/icon-512.png',
   'app-icons/icon-maskable-512.png',
   'app-icons/apple-touch-icon.png',
+  'demo/chapters.json',
+  'demo/poster.jpg',
 ];
 
 self.addEventListener('install', (event) => {
@@ -47,7 +50,11 @@ self.addEventListener('activate', (event) => {
 // Réponse depuis le cache, mise à jour en arrière-plan quand le réseau est disponible.
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  const url = new URL(request.url);
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  // La vidéo de démonstration est lue en flux (requêtes partielles « Range ») : elle n'est
+  // pas mise en cache, sinon Safari refuse de la lire.
+  if (request.headers.has('range') || url.pathname.endsWith('.mp4')) return;
   const cacheKey = request.mode === 'navigate' ? 'index.html' : request;
   event.respondWith(
     caches.open(CACHE_VERSION).then(async (cache) => {

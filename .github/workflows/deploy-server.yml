@@ -73,7 +73,7 @@ jobs:
       - name: Préparer les fichiers publiés
         run: |
           mkdir _site
-          cp -r index.html manifest.webmanifest serviceWorker.js .htaccess css js app-icons _site/
+          cp -r index.html manifest.webmanifest serviceWorker.js .htaccess css js app-icons demo _site/
 
       - name: Copier sur le serveur
         run: |
@@ -84,7 +84,7 @@ jobs:
           target="$DEPLOY_USER@$DEPLOY_HOST:$deploy_path/"
           $remote_shell "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p '$deploy_path'"
           # Dossiers de l'application : remplacés à l'identique (fichiers obsolètes supprimés).
-          rsync -rlz --delete --itemize-changes -e "$remote_shell" _site/css _site/js _site/app-icons "$target"
+          rsync -rlz --delete --itemize-changes -e "$remote_shell" _site/css _site/js _site/app-icons _site/demo "$target"
           # Fichiers à la racine : copiés sans toucher au reste du dossier (.well-known, etc.).
           rsync -rlz --itemize-changes -e "$remote_shell" _site/index.html _site/manifest.webmanifest _site/serviceWorker.js _site/.htaccess "$target"
 
