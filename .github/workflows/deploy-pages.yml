@@ -25,7 +25,7 @@ jobs:
       - name: Préparer les fichiers publiés
         run: |
           mkdir _site
-          cp -r index.html manifest.webmanifest serviceWorker.js css js app-icons _site/
+          cp -r index.html manifest.webmanifest serviceWorker.js css js app-icons demo _site/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
