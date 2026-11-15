@@ -57,6 +57,19 @@ test.describe('parcours critiques', () => {
     await context.close();
   });
 
+  test('la section Démo présente la vidéo et ses chapitres', async () => {
+    const { context, page, pageErrors } = await openApplication();
+    await page.locator('#demoViewTab').click();
+    await page.locator('.demo-chapter').first().waitFor();
+    assert.ok((await page.locator('.demo-chapter').count()) >= 10);
+    assert.equal(await page.locator('#demoVideo source').getAttribute('src'), 'demo/algobox-mobile-demo.mp4');
+    assert.equal(await page.locator('#algorithmView').isHidden(), true);
+    await page.locator('#algorithmViewTab').click();
+    assert.equal(await page.locator('#demoView').isHidden(), true);
+    assert.deepEqual(pageErrors, []);
+    await context.close();
+  });
+
   test("l'application s'ouvre sans réseau après une première visite", async () => {
     const { context, page } = await openApplication();
     await page.evaluate(() => navigator.serviceWorker.ready);

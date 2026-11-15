@@ -34,6 +34,7 @@
         <button class="view-switch__button" type="button" role="tab" id="presentationViewTab" aria-selected="false" aria-controls="presentationView">
           Présentation
         </button>
+        <button class="view-switch__button" type="button" role="tab" id="demoViewTab" aria-selected="false" aria-controls="demoView">Démo</button>
       </nav>
 
       <main class="workspace" id="algorithmView" role="tabpanel" aria-labelledby="algorithmViewTab">
@@ -81,6 +82,18 @@
         <ul class="parameter-list" id="parameterList"></ul>
         <button class="action-button" type="button" id="changeSettingsButton">Changer</button>
         <p class="operation-hint presentation__extension">Extension utilisée : aucune</p>
+      </section>
+
+      <section class="demo" id="demoView" role="tabpanel" aria-labelledby="demoViewTab" hidden>
+        <h2 class="demo__title">Tutoriel : utiliser AlgoBox Mobile</h2>
+        <p class="demo__intro">Une démonstration complète : écrire un algorithme, le tester, le suivre pas à pas, l'enregistrer et installer l'application.</p>
+        <video class="demo__video" id="demoVideo" controls playsinline preload="none" poster="demo/poster.jpg" aria-label="Vidéo tutoriel d'AlgoBox Mobile">
+          <source src="demo/algobox-mobile-demo.mp4" type="video/mp4" />
+        </video>
+        <p class="demo__notice" id="demoNotice" role="status" hidden></p>
+        <h3 class="demo__subtitle">Chapitres</h3>
+        <p class="operation-hint">Toucher un chapitre pour aller directement à ce moment de la vidéo.</p>
+        <ol class="demo__chapters" id="demoChapters"></ol>
       </section>
     </div>
 
