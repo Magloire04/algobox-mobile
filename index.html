@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AlgoBox Mobile</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--tx:#1b2230;--mut:#667086;--br:#d6dbe5;--ac:#2563eb;--acx:#fff;--err:#c62828;--ok:#17803a;--code:#eef1f7;--hl:#fff1a8;--bad:#ffd6d6;--grid:#dfe4ee;--axis:#6b7385;--curve:#d9480f}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1218;--card:#171c25;--tx:#e8ebf2;--mut:#98a0b3;--br:#2a3140;--ac:#5b8cff;--acx:#0b1020;--err:#ff7b7b;--ok:#5fd38a;--code:#10141c;--hl:#4d4410;--bad:#5a2020;--grid:#262d3b;--axis:#98a0b3;--curve:#ff9f5a}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--br);display:flex;align-items:center;gap:8px;padding:8px 12px}
+header h1{font-size:17px;margin:0;flex:1}
+header h1 small{display:block;font-weight:400;font-size:11px;color:var(--mut)}
+button,select,input,textarea{font:inherit;color:inherit}
+button{background:var(--card);border:1px solid var(--br);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+button.p{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
+button:disabled{opacity:.45}
+input,select{background:var(--card);border:1px solid var(--br);border-radius:8px;padding:8px 10px;min-height:40px}
+main{padding:12px 12px 84px;max-width:760px;margin:0 auto}
+.tab{display:none}.tab.on{display:block}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--br);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:6}
+nav button{flex:1;border:0;border-radius:0;background:none;min-height:54px;font-size:12px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button b{font-size:18px;font-weight:400}
+nav button.on{color:var(--ac);font-weight:700}
+.card{background:var(--card);border:1px solid var(--br);border-radius:12px;padding:12px;margin-bottom:12px}
+.card h2{font-size:14px;margin:0 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row>*{flex:0 0 auto}.row>.g{flex:1 1 120px;min-width:0}
+.vr{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--br);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px}
+.vr:first-of-type{border-top:0}.vr .n{font-weight:700}.vr .t{color:var(--mut);flex:1}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+.tools{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;-webkit-overflow-scrolling:touch}
+.tools button{white-space:nowrap;padding:6px 10px;min-height:36px;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.ed{display:flex;border:1px solid var(--br);border-radius:10px;background:var(--code);overflow:hidden;height:46vh;min-height:260px}
+.gut{flex:0 0 36px;text-align:right;padding:8px 6px 8px 0;color:var(--mut);font:13px/20px ui-monospace,Menlo,Consolas,monospace;overflow:hidden;white-space:pre;border-right:1px solid var(--br);user-select:none}
+.ed textarea{flex:1;border:0;outline:0;resize:none;background:transparent;padding:8px;font:13px/20px ui-monospace,Menlo,Consolas,monospace;white-space:pre;overflow:auto;min-width:0}
+pre#out{margin:0;background:var(--code);border-radius:8px;padding:10px;min-height:120px;max-height:40vh;overflow:auto;white-space:pre-wrap;word-break:break-word;font:13px/1.45 ui-monospace,Menlo,Consolas,monospace}
+.err{color:var(--err);font-weight:600}.ok{color:var(--ok)}
+.lst{background:var(--code);border-radius:8px;font:12.5px/1.6 ui-monospace,Menlo,Consolas,monospace;max-height:240px;overflow:auto;padding:4px 0}
+.lst div{white-space:pre;padding:0 8px}.lst i{color:var(--mut);font-style:normal;display:inline-block;width:28px;text-align:right;margin-right:8px}
+.lst .cur{background:var(--hl)}.lst .bad{background:var(--bad)}
+table{width:100%;border-collapse:collapse;font:13px ui-monospace,Menlo,Consolas,monospace}
+td{padding:4px 6px;border-top:1px solid var(--br);word-break:break-all}td:first-child{font-weight:700;width:30%}
+canvas{width:100%;display:block;border:1px solid var(--br);border-radius:8px;background:var(--card)}
+label.f{display:block;font-size:12px;color:var(--mut);margin-bottom:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+details summary{cursor:pointer;color:var(--ac);font-weight:600}
+details code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:12.5px}
+details p,details li{margin:4px 0}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;display:none;align-items:flex-end;justify-content:center}
+#modal.on{display:flex}
+#modal .box{background:var(--card);width:100%;max-width:640px;border-radius:16px 16px 0 0;padding:14px;max-height:88vh;overflow:auto}
+#modal textarea{width:100%;height:42vh;background:var(--code);border:1px solid var(--br);border-radius:8px;padding:8px;font:12.5px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre}
+#modal .ex{display:block;width:100%;text-align:left;margin-bottom:8px}
+#toast{position:fixed;left:12px;right:12px;bottom:70px;background:#1b2230;color:#fff;border-radius:10px;padding:10px 12px;display:none;z-index:30;gap:10px;align-items:center;justify-content:space-between}
+#toast button{min-height:32px;padding:4px 10px}
+.hint{font-size:12px;color:var(--mut);margin:6px 0 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>AlgoBox Mobile<small>Syntaxe compatible AlgoBox</small></h1>
+  <button id="bEx">Exemples</button>
+  <button id="bCode">Code</button>
+</header>
+<main>
+  <section class="tab" id="t-vars">
+    <div class="card">
+      <h2>Déclaration des variables</h2>
+      <div class="row">
+        <input id="vName" class="g" placeholder="nom (ex : n)" autocapitalize="off" autocomplete="off" spellcheck="false">
+        <select id="vType"><option>NOMBRE</option><option>CHAINE</option><option>LISTE</option></select>
+        <button class="p" id="vAdd">Ajouter</button>
+      </div>
+      <div id="vErr" class="err hint"></div>
+      <div id="vList" style="margin-top:8px"></div>
+      <p class="hint">NOMBRE : un nombre. CHAINE : du texte. LISTE : une suite de nombres, utilisée avec un indice : L[1], L[2]…</p>
+    </div>
+  </section>
+
+  <section class="tab" id="t-fn">
+    <div class="card">
+      <h2>Fonction numérique</h2>
+      <label class="f">F1(x) =</label>
+      <input id="fExpr" style="width:100%" class="mono" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="ex : x*x-2*x+1">
+      <div id="fErr" class="err hint"></div>
+      <label class="row" style="margin-top:8px"><input type="checkbox" id="fDraw" style="min-height:0"> Dessiner la courbe de F1</label>
+      <p class="hint">Dans l'algorithme, on l'utilise ainsi : <span class="mono">y PREND_LA_VALEUR F1(x)</span></p>
+    </div>
+    <div class="card">
+      <h2>Fenêtre graphique</h2>
+      <div class="grid3">
+        <div><label class="f">Xmin</label><input id="w-xmin" inputmode="decimal" style="width:100%"></div>
+        <div><label class="f">Xmax</label><input id="w-xmax" inputmode="decimal" style="width:100%"></div>
+        <div><label class="f">Graduation X</label><input id="w-gx" inputmode="decimal" style="width:100%"></div>
+        <div><label class="f">Ymin</label><input id="w-ymin" inputmode="decimal" style="width:100%"></div>
+        <div><label class="f">Ymax</label><input id="w-ymax" inputmode="decimal" style="width:100%"></div>
+        <div><label class="f">Graduation Y</label><input id="w-gy" inputmode="decimal" style="width:100%"></div>
+      </div>
+    </div>
+    <div class="card"><h2>Aperçu</h2><canvas id="cvF"></canvas></div>
+  </section>
+
+  <section class="tab" id="t-alg">
+    <div class="card">
+      <h2>Algorithme</h2>
+      <div class="tools" id="tools"></div>
+      <div class="ed"><div class="gut" id="gut"></div><textarea id="code" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"></textarea></div>
+      <div class="row" style="margin-top:8px">
+        <button id="bTidy">Indenter</button>
+        <button class="p g" id="bGo">▶ Tester</button>
+      </div>
+    </div>
+    <div class="card">
+      <details>
+        <summary>Aide-mémoire</summary>
+        <ul>
+          <li><code>LIRE n</code> · <code>AFFICHER n</code> · <code>AFFICHER "texte"</code> · <code>AFFICHER … SANS_RETOUR</code></li>
+          <li><code>x PREND_LA_VALEUR 2*n+1</code> · <code>L[3] PREND_LA_VALEUR 5</code></li>
+          <li><code>SI (x&gt;0) ALORS</code> avec <code>DEBUT_SI … FIN_SI</code>, puis <code>SINON</code> avec <code>DEBUT_SINON … FIN_SINON</code></li>
+          <li><code>TANT_QUE (x&lt;10) FAIRE</code> avec <code>DEBUT_TANT_QUE … FIN_TANT_QUE</code></li>
+          <li><code>POUR i ALLANT_DE 1 A 10</code> avec <code>DEBUT_POUR … FIN_POUR</code></li>
+          <li>Opérateurs : <code>+ - * / ^ %</code> · comparaisons <code>== != &lt; &gt; &lt;= &gt;=</code> · <code>ET</code> <code>OU</code> (ou <code>&amp;&amp;</code> <code>||</code>)</li>
+          <li>Fonctions : <code>sqrt pow abs cos sin tan exp log floor ceil round random()</code>, <code>PI</code></li>
+          <li><code>ALGOBOX_ALEA_ENT(p,n)</code> · <code>ALGOBOX_ARRONDI(x,n)</code> · <code>ALGOBOX_PGCD(a,b)</code> · <code>ALGOBOX_FACTORIELLE(n)</code> · <code>ALGOBOX_COEFF_BINOMIAL(n,k)</code> · <code>ALGOBOX_QUOTIENT(a,b)</code> · <code>ALGOBOX_RESTE(a,b)</code></li>
+          <li>Listes : <code>ALGOBOX_SOMME(L,1,n)</code> · <code>ALGOBOX_MOYENNE</code> · <code>ALGOBOX_MINIMUM</code> · <code>ALGOBOX_MAXIMUM</code> · <code>ALGOBOX_VARIANCE</code> · <code>ALGOBOX_ECART_TYPE</code></li>
+          <li>Graphique : <code>TRACER_POINT (x,y)</code> · <code>TRACER_SEGMENT (x1,y1)-&gt;(x2,y2)</code> · <code>PAUSE</code> · commentaire : <code>// texte</code></li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <section class="tab" id="t-run">
+    <div class="card">
+      <div class="row">
+        <button class="p g" id="rGo">▶ Lancer</button>
+        <button class="g" id="rStep">Pas à pas</button>
+        <button id="rStop">⏹</button>
+      </div>
+      <div id="rPause" class="row" style="margin-top:8px;display:none"><button class="p g" id="rCont">Continuer ›</button></div>
+      <div id="rRead" style="margin-top:8px;display:none">
+        <label class="f" id="rLbl"></label>
+        <div class="row"><input id="rIn" class="g mono" autocapitalize="off" autocomplete="off" spellcheck="false"><button class="p" id="rOk">OK</button></div>
+        <div class="err hint" id="rErr"></div>
+      </div>
+    </div>
+    <div class="card"><h2>Résultats</h2><pre id="out"></pre></div>
+    <div class="card"><h2>Variables</h2><table id="vars"></table></div>
+    <div class="card"><h2>Code</h2><div class="lst" id="lst"></div></div>
+    <div class="card"><h2>Graphique</h2><canvas id="cvR"></canvas></div>
+  </section>
+</main>
+
+<nav id="nav">
+  <button data-t="vars"><b>𝑥</b>Variables</button>
+  <button data-t="fn"><b>ƒ</b>Fonction</button>
+  <button data-t="alg"><b>≣</b>Algorithme</button>
+  <button data-t="run"><b>▶</b>Test</button>
+</nav>
+
+<div id="modal"><div class="box" id="mbox"></div></div>
+<div id="toast"><span id="toastT"></span><button id="toastB">Annuler</button></div>
+
+<script>
+"use strict";
+/* ---------- utilitaires ---------- */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+class AErr extends Error{constructor(m,l){super(m);this.line=l}}
+const err=(m,l)=>new AErr(m,l);
+function fmt(v){
+  if(typeof v==="number"){
+    if(Number.isNaN(v))return"NaN";
+    if(!Number.isFinite(v))return v>0?"Infinity":"-Infinity";
+    return String(parseFloat(v.toPrecision(15)));
+  }
+  return String(v);
+}
+function stripComment(l){
+  let q=false;
+  for(let i=0;i<l.length;i++){
+    const c=l[i];
+    if(c==='"')q=!q;
+    else if(!q&&c==="/"&&l[i+1]==="/")return l.slice(0,i);
+  }
+  return l;
+}
+function splitTop(s){
+  const r=[];let d=0,q=false,cur="";
+  for(const c of s){
+    if(c==='"')q=!q;
+    if(!q){if(c==="("||c==="[")d++;if(c===")"||c==="]")d--;if(c===","&&d===0){r.push(cur);cur="";continue}}
+    cur+=c;
+  }
+  r.push(cur);return r;
+}
+
+/* ---------- exemples ---------- */
+const EX=[
+{name:"Somme des n premiers entiers",vars:[["n","NOMBRE"],["S","NOMBRE"],["i","NOMBRE"]],fn:"x*x",win:[-10,10,-10,10,1,1],code:
+`LIRE n
+S PREND_LA_VALEUR 0
+POUR i ALLANT_DE 1 A n
+DEBUT_POUR
+S PREND_LA_VALEUR S+i
+FIN_POUR
+AFFICHER "La somme de 1 à n vaut :"
+AFFICHER S`},
+{name:"Pair ou impair (SI / SINON)",vars:[["n","NOMBRE"]],fn:"x*x",win:[-10,10,-10,10,1,1],code:
+`LIRE n
+SI (n%2==0) ALORS
+DEBUT_SI
+AFFICHER "n est pair"
+FIN_SI
+SINON
+DEBUT_SINON
+AFFICHER "n est impair"
+FIN_SINON`},
+{name:"Factorielle (TANT_QUE)",vars:[["n","NOMBRE"],["F","NOMBRE"],["k","NOMBRE"]],fn:"x*x",win:[-10,10,-10,10,1,1],code:
+`LIRE n
+F PREND_LA_VALEUR 1
+k PREND_LA_VALEUR 1
+TANT_QUE (k<=n) FAIRE
+DEBUT_TANT_QUE
+F PREND_LA_VALEUR F*k
+k PREND_LA_VALEUR k+1
+FIN_TANT_QUE
+AFFICHER "n! vaut :"
+AFFICHER F`},
+{name:"Équation du second degré",vars:[["a","NOMBRE"],["b","NOMBRE"],["c","NOMBRE"],["delta","NOMBRE"],["x1","NOMBRE"],["x2","NOMBRE"]],fn:"x*x",win:[-10,10,-10,10,1,1],code:
+`LIRE a
+LIRE b
+LIRE c
+delta PREND_LA_VALEUR b*b-4*a*c
+SI (delta<0) ALORS
+DEBUT_SI
+AFFICHER "Pas de solution réelle"
+FIN_SI
+SINON
+DEBUT_SINON
+SI (delta==0) ALORS
+DEBUT_SI
+x1 PREND_LA_VALEUR -b/(2*a)
+AFFICHER "Une solution double :"
+AFFICHER x1
+FIN_SI
+SINON
+DEBUT_SINON
+x1 PREND_LA_VALEUR (-b-sqrt(delta))/(2*a)
+x2 PREND_LA_VALEUR (-b+sqrt(delta))/(2*a)
+AFFICHER "Deux solutions :"
+AFFICHER x1
+AFFICHER x2
+FIN_SINON
+FIN_SINON`},
+{name:"Lancers de dé (liste, aléatoire)",vars:[["i","NOMBRE"],["d","NOMBRE"],["L","LISTE"]],fn:"x*x",win:[-10,10,-10,10,1,1],code:
+`POUR i ALLANT_DE 1 A 6
+DEBUT_POUR
+L[i] PREND_LA_VALEUR 0
+FIN_POUR
+POUR i ALLANT_DE 1 A 600
+DEBUT_POUR
+d PREND_LA_VALEUR ALGOBOX_ALEA_ENT(1,6)
+L[d] PREND_LA_VALEUR L[d]+1
+FIN_POUR
+POUR i ALLANT_DE 1 A 6
+DEBUT_POUR
+AFFICHER "Face "+i+" : "+L[i]
+FIN_POUR`},
+{name:"Courbe de F1 (graphique)",vars:[["x","NOMBRE"]],fn:"x*x",win:[-4,4,-1,10,1,1],code:
+`POUR x ALLANT_DE -3 A 3
+DEBUT_POUR
+TRACER_POINT (x,F1(x))
+FIN_POUR
+TRACER_SEGMENT (-3,F1(-3))->(3,F1(3))
+AFFICHER "Points tracés sur la courbe de F1"`}
+];
+
+/* ---------- état ---------- */
+const KEY="algobox-mobile-v1";
+function pad(n){return"  ".repeat(n)}
+function tidy(t){
+  let d=0;
+  return t.split("\n").map(l=>{
+    const s=l.trim();if(!s)return"";
+    const c=stripComment(s).trim();
+    if(/^FIN_/.test(c)){const o=pad(d)+s;d=Math.max(0,d-1);return o}
+    const o=pad(d)+s;
+    if(/^SI\b.*ALORS$/.test(c)||c==="SINON"||/^TANT_QUE\b.*FAIRE$/.test(c)||/^POUR\s+\S+\s+ALLANT_DE\b/.test(c))d++;
+    return o;
+  }).join("\n");
+}
+function fromEx(e){
+  return{vars:e.vars.map(v=>({name:v[0],type:v[1]})),fn:{expr:e.fn,draw:true},
+    win:{xmin:e.win[0],xmax:e.win[1],ymin:e.win[2],ymax:e.win[3],gx:e.win[4],gy:e.win[5]},code:tidy(e.code)};
+}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){S=null}
+if(!S||!S.vars||!S.win||typeof S.code!=="string")S=fromEx(EX[0]);
+let saveT=null;
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}},300)}
+
+/* ---------- analyse des expressions ---------- */
+function tokenize(src,line){
+  const t=[];let i=0;
+  while(i<src.length){
+    const c=src[i];
+    if(/\s/.test(c)){i++;continue}
+    if(c==='"'){
+      let j=i+1,s="";
+      while(j<src.length&&src[j]!=='"')s+=src[j++];
+      if(j>=src.length)throw err("Il manque un guillemet fermant",line);
+      t.push({k:"str",v:s});i=j+1;continue;
+    }
+    if(/[0-9]/.test(c)||(c==="."&&/[0-9]/.test(src[i+1]||""))){
+      const m=/^(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/.exec(src.slice(i));
+      t.push({k:"num",v:parseFloat(m[0])});i+=m[0].length;continue;
+    }
+    if(/[A-Za-z_]/.test(c)){
+      const m=/^[A-Za-z_][A-Za-z0-9_]*/.exec(src.slice(i))[0];i+=m.length;
+      if(m==="ET")t.push({k:"op",v:"&&"});else if(m==="OU")t.push({k:"op",v:"||"});else t.push({k:"id",v:m});
+      continue;
+    }
+    const two=src.substr(i,2);
+    if(["==","!=","<=",">=","&&","||"].includes(two)){t.push({k:"op",v:two});i+=2;continue}
+    if("+-*/%^<>()[],!".includes(c)){t.push({k:"op",v:c});i++;continue}
+    throw err("Caractère inattendu : « "+c+" »",line);
+  }
+  return t;
+}
+const PREC={"||":1,"&&":2,"==":3,"!=":3,"<":3,">":3,"<=":3,">=":3,"+":4,"-":4,"*":5,"/":5,"%":5};
+function parseExpr(src,line){
+  const t=tokenize(src,line);let p=0;
+  const isOp=v=>t[p]&&t[p].k==="op"&&t[p].v===v;
+  function expr(min){
+    let left=unary();
+    for(;;){
+      const tk=t[p];
+      if(!tk||tk.k!=="op"||!(tk.v in PREC)||PREC[tk.v]<min)break;
+      p++;
+      const r=expr(PREC[tk.v]+1);
+      left={n:"bin",op:tk.v,a:left,b:r,line};
+    }
+    return left;
+  }
+  function unary(){
+    if(isOp("-")){p++;return{n:"neg",a:unary(),line}}
+    if(isOp("+")){p++;return unary()}
+    if(isOp("!")){p++;return{n:"not",a:unary(),line}}
+    const b=primary();
+    if(isOp("^")){p++;const e=unary();return{n:"bin",op:"^",a:b,b:e,line}}
+    return b;
+  }
+  function primary(){
+    const tk=t[p++];
+    if(!tk)throw err("Expression incomplète",line);
+    if(tk.k==="num"||tk.k==="str")return{n:"lit",v:tk.v};
+    if(tk.k==="id"){
+      if(isOp("(")){
+        p++;const args=[];
+        if(!isOp(")")){
+          args.push(expr(1));
+          while(isOp(",")){p++;args.push(expr(1))}
+        }
+        if(!isOp(")"))throw err("Il manque une parenthèse fermante",line);
+        p++;return{n:"call",name:tk.v,args,line};
+      }
+      if(isOp("[")){
+        p++;const idx=expr(1);
+        if(!isOp("]"))throw err("Il manque un crochet fermant",line);
+        p++;return{n:"idx",name:tk.v,idx,line};
+      }
+      return{n:"var",name:tk.v,line};
+    }
+    if(tk.k==="op"&&tk.v==="("){
+      const e=expr(1);
+      if(!isOp(")"))throw err("Il manque une parenthèse fermante",line);
+      p++;return e;
+    }
+    throw err("Expression invalide près de « "+tk.v+" »",line);
+  }
+  if(!t.length)throw err("Expression vide",line);
+  const e=expr(1);
+  if(p<t.length)throw err("Élément inattendu dans l'expression : « "+t[p].v+" »",line);
+  return e;
+}
+
+/* ---------- fonctions ---------- */
+const F={
+  sqrt:[[1,1],a=>{if(a<0)throw"Racine carrée d'un nombre négatif";return Math.sqrt(a)}],
+  pow:[[2,2],Math.pow],abs:[[1,1],Math.abs],cos:[[1,1],Math.cos],sin:[[1,1],Math.sin],tan:[[1,1],Math.tan],
+  acos:[[1,1],Math.acos],asin:[[1,1],Math.asin],atan:[[1,1],Math.atan],exp:[[1,1],Math.exp],
+  log:[[1,1],a=>{if(a<=0)throw"log n'est défini que pour x > 0";return Math.log(a)}],
+  floor:[[1,1],Math.floor],ceil:[[1,1],Math.ceil],round:[[1,1],Math.round],random:[[0,0],Math.random],
+  ALGOBOX_ALEA_ENT:[[2,2],(p,n)=>{if(!Number.isInteger(p)||!Number.isInteger(n)||n<p)throw"ALGOBOX_ALEA_ENT(p,n) demande deux entiers avec p ≤ n";return p+Math.floor(Math.random()*(n-p+1))}],
+  ALGOBOX_ARRONDI:[[1,2],(x,n=0)=>{const k=Math.pow(10,n);return Math.round(x*k)/k}],
+  ALGOBOX_PGCD:[[2,2],(a,b)=>{if(!Number.isInteger(a)||!Number.isInteger(b))throw"PGCD : entiers attendus";a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a}],
+  ALGOBOX_FACTORIELLE:[[1,1],n=>{if(!Number.isInteger(n)||n<0||n>170)throw"Factorielle : entier entre 0 et 170";let r=1;for(let i=2;i<=n;i++)r*=i;return r}],
+  ALGOBOX_COEFF_BINOMIAL:[[2,2],(n,k)=>{if(!Number.isInteger(n)||!Number.isInteger(k)||k<0||n<0||k>n)throw"Coefficient binomial : 0 ≤ k ≤ n (entiers)";let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r)}],
+  ALGOBOX_QUOTIENT:[[2,2],(a,b)=>{if(b===0)throw"Division par zéro";return Math.floor(a/b)}],
+  ALGOBOX_RESTE:[[2,2],(a,b)=>{if(b===0)throw"Division par zéro";return a-b*Math.floor(a/b)}]
+};
+const LF={
+  ALGOBOX_SOMME:a=>a.reduce((s,x)=>s+x,0),
+  ALGOBOX_MOYENNE:a=>a.reduce((s,x)=>s+x,0)/a.length,
+  ALGOBOX_MINIMUM:a=>Math.min(...a),ALGOBOX_MAXIMUM:a=>Math.max(...a),
+  ALGOBOX_VARIANCE:a=>{const m=a.reduce((s,x)=>s+x,0)/a.length;return a.reduce((s,x)=>s+(x-m)*(x-m),0)/a.length},
+  ALGOBOX_ECART_TYPE:a=>{const m=a.reduce((s,x)=>s+x,0)/a.length;return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/a.length)}
+};
+
+/* ---------- évaluation ---------- */
+function ev(n,env){
+  switch(n.n){
+    case"lit":return n.v;
+    case"var":{
+      const ty=env.decl[n.name];
+      if(!ty){if(n.name==="PI")return Math.PI;throw err("La variable « "+n.name+" » n'est pas déclarée (onglet Variables)",n.line)}
+      if(ty==="LISTE")throw err("« "+n.name+" » est une LISTE : écrire par exemple "+n.name+"[1]",n.line);
+      const v=env.val[n.name];
+      if(v===undefined)throw err("La variable « "+n.name+" » n'a pas encore de valeur",n.line);
+      return v;
+    }
+    case"idx":{
+      if(env.decl[n.name]!=="LISTE")throw err("« "+n.name+" » n'est pas une LISTE déclarée",n.line);
+      const k=ev(n.idx,env);
+      if(typeof k!=="number"||!Number.isInteger(k)||k<1)throw err("L'indice doit être un entier supérieur ou égal à 1",n.line);
+      const v=env.val[n.name][k];
+      if(v===undefined)throw err(n.name+"["+k+"] n'a pas encore de valeur",n.line);
+      return v;
+    }
+    case"neg":{const a=ev(n.a,env);if(typeof a!=="number")throw err("Le signe - ne s'applique qu'à un nombre",n.line);return-a}
+    case"not":{const a=ev(n.a,env);if(typeof a!=="boolean")throw err("! s'applique à une condition",n.line);return!a}
+    case"bin":{
+      if(n.op==="&&"||n.op==="||"){
+        const a=ev(n.a,env);
+        if(typeof a!=="boolean")throw err("ET / OU s'appliquent à des conditions",n.line);
+        if(n.op==="&&"&&!a)return false;
+        if(n.op==="||"&&a)return true;
+        const b=ev(n.b,env);
+        if(typeof b!=="boolean")throw err("ET / OU s'appliquent à des conditions",n.line);
+        return b;
+      }
+      const a=ev(n.a,env),b=ev(n.b,env);
+      if(n.op==="+"&&(typeof a==="string"||typeof b==="string"))return fmt(a)+fmt(b);
+      if(["==","!=","<",">","<=",">="].includes(n.op)){
+        if(typeof a!==typeof b)throw err("On ne peut pas comparer un nombre et du texte",n.line);
+        switch(n.op){case"==":return a===b;case"!=":return a!==b;case"<":return a<b;case">":return a>b;case"<=":return a<=b;default:return a>=b}
+      }
+      if(typeof a!=="number"||typeof b!=="number")throw err("L'opération « "+n.op+" » demande des nombres",n.line);
+      switch(n.op){
+        case"+":return a+b;case"-":return a-b;case"*":return a*b;
+        case"/":if(b===0)throw err("Division par zéro",n.line);return a/b;
+        case"%":if(b===0)throw err("Division par zéro (reste)",n.line);return a%b;
+        case"^":return Math.pow(a,b);
+      }
+      return 0;
+    }
+    case"call":{
+      if(LF[n.name]){
+        const [ln,i,j]=n.args;
+        if(n.args.length!==3||ln.n!=="var"||env.decl[ln.name]!=="LISTE")throw err(n.name+"(L,i,j) : L doit être une LISTE, i et j les indices de début et de fin",n.line);
+        const a=ev(i,env),b=ev(j,env),arr=[];
+        if(!Number.isInteger(a)||!Number.isInteger(b)||a<1||b<a)throw err(n.name+" : indices invalides",n.line);
+        for(let k=a;k<=b;k++){
+          const v=env.val[ln.name][k];
+          if(v===undefined)throw err(ln.name+"["+k+"] n'a pas encore de valeur",n.line);
+          arr.push(v);
+        }
+        return LF[n.name](arr);
+      }
+      const args=n.args.map(a=>ev(a,env));
+      if(n.name==="F1"){
+        if(!env.fns.F1)throw err("La fonction F1 n'est pas définie (onglet Fonction)",n.line);
+        if(args.length!==1||typeof args[0]!=="number")throw err("F1 s'utilise avec un nombre : F1(x)",n.line);
+        return ev(env.fns.F1,{decl:{x:"NOMBRE"},val:{x:args[0]},fns:{}});
+      }
+      const f=F[n.name];
+      if(!f)throw err("Fonction inconnue : « "+n.name+" »",n.line);
+      if(args.length<f[0][0]||args.length>f[0][1])throw err(n.name+" : mauvais nombre d'arguments",n.line);
+      if(args.some(a=>typeof a!=="number"))throw err(n.name+" attend des nombres",n.line);
+      try{return f[1](...args)}catch(e){if(typeof e==="string")throw err(e,n.line);throw e}
+    }
+  }
+  throw err("Expression non reconnue",n.line);
+}
+
+/* ---------- compilation de l'algorithme ---------- */
+function target(str,no){
+  const m=/^([A-Za-z_]\w*)\s*(?:\[(.+)\])?$/.exec(str.trim());
+  if(!m)throw err("Nom de variable invalide : « "+str.trim()+" »",no);
+  return{name:m[1],idx:m[2]?parseExpr(m[2],no):null};
+}
+function compile(code){
+  const L=[];
+  code.split("\n").forEach((r,i)=>{
+    const s=stripComment(r).trim();
+    if(s&&s!=="DEBUT_ALGORITHME"&&s!=="FIN_ALGORITHME")L.push({s,no:i+1});
+  });
+  let p=0;
+  function block(stop){
+    const out=[];
+    while(p<L.length){
+      const s=L[p].s;
+      if(stop.includes(s))return out;
+      if(/^(FIN_|DEBUT_)/.test(s)||s==="SINON")throw err("« "+s+" » inattendu : aucun bloc ne correspond",L[p].no);
+      out.push(stmt());
+    }
+    return out;
+  }
+  function open(kw,no){
+    if(p>=L.length||L[p].s!==kw)throw err("Il manque « "+kw+" » juste après cette ligne",no);
+    p++;
+  }
+  function close(kw,no){
+    if(p>=L.length||L[p].s!==kw)throw err("Il manque « "+kw+" » pour fermer le bloc ouvert ligne "+no,no);
+    p++;
+  }
+  function stmt(){
+    const{s,no}=L[p++];let m;
+    if(s==="PAUSE")return{n:"pause",line:no};
+    if((m=/^LIRE\s+(.+)$/.exec(s)))return{n:"read",tgt:target(m[1],no),line:no};
+    if((m=/^AFFICHER(?:CALCUL)?\s+(.+)$/.exec(s))){
+      let e=m[1],nl=true;
+      if(/\sSANS_RETOUR$/.test(e)){nl=false;e=e.replace(/\s+SANS_RETOUR$/,"")}
+      return{n:"print",e:parseExpr(e,no),nl,line:no};
+    }
+    if((m=/^SI\s*(.+?)\s*ALORS$/.exec(s))){
+      const c=parseExpr(m[1],no);open("DEBUT_SI",no);const a=block(["FIN_SI"]);close("FIN_SI",no);
+      let b=null;
+      if(p<L.length&&L[p].s==="SINON"){const n2=L[p].no;p++;open("DEBUT_SINON",n2);b=block(["FIN_SINON"]);close("FIN_SINON",n2)}
+      return{n:"if",c,a,b,line:no};
+    }
+    if((m=/^TANT_QUE\s*(.+?)\s*FAIRE$/.exec(s))){
+      const c=parseExpr(m[1],no);open("DEBUT_TANT_QUE",no);const b=block(["FIN_TANT_QUE"]);close("FIN_TANT_QUE",no);
+      return{n:"while",c,b,line:no};
+    }
+    if((m=/^POUR\s+([A-Za-z_]\w*)\s+ALLANT_DE\s+(.+?)\s+A\s+(.+)$/.exec(s))){
+      const lo=parseExpr(m[2],no),hi=parseExpr(m[3],no);open("DEBUT_POUR",no);const b=block(["FIN_POUR"]);close("FIN_POUR",no);
+      return{n:"for",v:m[1],lo,hi,b,line:no};
+    }
+    if((m=/^TRACER_POINT\s*\((.+)\)$/.exec(s))){
+      const a=splitTop(m[1]);if(a.length!==2)throw err("TRACER_POINT (x,y) : deux valeurs attendues",no);
+      return{n:"pt",x:parseExpr(a[0],no),y:parseExpr(a[1],no),line:no};
+    }
+    if((m=/^TRACER_SEGMENT\s*\((.+)\)\s*->\s*\((.+)\)$/.exec(s))){
+      const a=splitTop(m[1]),b=splitTop(m[2]);
+      if(a.length!==2||b.length!==2)throw err("TRACER_SEGMENT (x1,y1)->(x2,y2)",no);
+      return{n:"seg",x1:parseExpr(a[0],no),y1:parseExpr(a[1],no),x2:parseExpr(b[0],no),y2:parseExpr(b[1],no),line:no};
+    }
+    if((m=/^(.+?)\s+PREND_LA_VALEUR\s+(.+)$/.exec(s)))return{n:"set",tgt:target(m[1],no),e:parseExpr(m[2],no),line:no};
+    throw err("Instruction non reconnue : « "+s+" »",no);
+  }
+  return block([]);
+}
+
+/* ---------- exécution (générateur) ---------- */
+function assign(env,tg,val,line){
+  const ty=env.decl[tg.name];
+  if(!ty)throw err("La variable « "+tg.name+" » n'est pas déclarée (onglet Variables)",line);
+  if(ty==="LISTE"){
+    if(!tg.idx)throw err("« "+tg.name+" » est une LISTE : écrire par exemple "+tg.name+"[1]",line);
+    const k=ev(tg.idx,env);
+    if(typeof k!=="number"||!Number.isInteger(k)||k<1)throw err("L'indice doit être un entier supérieur ou égal à 1",line);
+    if(typeof val!=="number")throw err("Une LISTE ne contient que des nombres",line);
+    env.val[tg.name][k]=val;return;
+  }
+  if(tg.idx)throw err("« "+tg.name+" » n'est pas une LISTE",line);
+  if(ty==="NOMBRE"&&typeof val!=="number")throw err("« "+tg.name+" » est de type NOMBRE : on ne peut pas lui donner du texte",line);
+  if(ty==="CHAINE"&&typeof val!=="string")val=fmt(val);
+  env.val[tg.name]=val;
+}
+function* execBlock(b,env,ctx){for(const s of b)yield*exec(s,env,ctx)}
+function tick(ctx,line){if(++ctx.steps>ctx.max)throw err("Trop d'instructions exécutées : boucle infinie probable ?",line)}
+function cond(n,env){
+  const c=ev(n,env);
+  if(typeof c!=="boolean")throw err("Ceci n'est pas une condition (utiliser ==, <, >, …)",n.line);
+  return c;
+}
+function* exec(s,env,ctx){
+  tick(ctx,s.line);
+  yield{t:"step",line:s.line};
+  switch(s.n){
+    case"read":{
+      const ty=env.decl[s.tgt.name];
+      if(!ty)throw err("La variable « "+s.tgt.name+" » n'est pas déclarée (onglet Variables)",s.line);
+      let disp=s.tgt.name;
+      if(s.tgt.idx){const k=ev(s.tgt.idx,env);disp+="["+fmt(k)+"]"}
+      const v=yield{t:"read",name:disp,type:ty==="CHAINE"?"CHAINE":"NOMBRE"};
+      assign(env,s.tgt,v,s.line);break;
+    }
+    case"print":ctx.print(fmt(ev(s.e,env)),s.nl);break;
+    case"set":assign(env,s.tgt,ev(s.e,env),s.line);break;
+    case"if":
+      if(cond(s.c,env))yield*execBlock(s.a,env,ctx);
+      else if(s.b)yield*execBlock(s.b,env,ctx);
+      break;
+    case"while":
+      while(cond(s.c,env)){
+        yield*execBlock(s.b,env,ctx);
+        tick(ctx,s.line);
+        yield{t:"step",line:s.line};
+      }
+      break;
+    case"for":{
+      if(env.decl[s.v]!=="NOMBRE")throw err("La variable « "+s.v+" » doit être déclarée de type NOMBRE",s.line);
+      const lo=ev(s.lo,env),hi=ev(s.hi,env);
+      if(typeof lo!=="number"||typeof hi!=="number")throw err("Les bornes de POUR doivent être des nombres",s.line);
+      for(let v=lo;v<=hi;v++){
+        env.val[s.v]=v;
+        if(v>lo){tick(ctx,s.line);yield{t:"step",line:s.line}}
+        yield*execBlock(s.b,env,ctx);
+      }
+      break;
+    }
+    case"pt":ctx.g.pts.push([num(ev(s.x,env),s.line),num(ev(s.y,env),s.line)]);break;
+    case"seg":ctx.g.seg.push([num(ev(s.x1,env),s.line),num(ev(s.y1,env),s.line),num(ev(s.x2,env),s.line),num(ev(s.y2,env),s.line)]);break;
+    case"pause":yield{t:"pause"};break;
+  }
+}
+function num(v,l){if(typeof v!=="number")throw err("Une valeur numérique est attendue",l);return v}
+
+/* ---------- environnement ---------- */
+function makeFns(){
+  let f1=null,e=null;
+  if(S.fn.expr&&S.fn.expr.trim()){
+    try{f1=parseExpr(S.fn.expr,0)}catch(x){e=x}
+  }
+  return{F1:f1,err:e};
+}
+function makeEnv(){
+  const decl={},val={};
+  for(const v of S.vars){decl[v.name]=v.type;if(v.type==="LISTE")val[v.name]={}}
+  const f=makeFns();
+  return{decl,val,fns:{F1:f.F1}};
+}
+
+/* ---------- graphique ---------- */
+function cssv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+function drawGraph(cv,g){
+  if(!cv.clientWidth)return;
+  const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=Math.round(W*0.8);
+  cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+"px";
+  const c=cv.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
+  const w=S.win;
+  const xmin=+w.xmin,xmax=+w.xmax,ymin=+w.ymin,ymax=+w.ymax,gx=+w.gx,gy=+w.gy;
+  if(!(xmax>xmin&&ymax>ymin)){c.fillStyle=cssv("--err");c.font="14px system-ui";c.fillText("Fenêtre invalide (Xmin < Xmax et Ymin < Ymax)",10,24);return}
+  const X=x=>(x-xmin)/(xmax-xmin)*W,Y=y=>H-(y-ymin)/(ymax-ymin)*H;
+  c.lineWidth=1;c.strokeStyle=cssv("--grid");c.fillStyle=cssv("--axis");c.font="10px system-ui";
+  if(gx>0&&(xmax-xmin)/gx<=100){
+    const sp=gx/(xmax-xmin)*W;
+    for(let x=Math.ceil(xmin/gx-1e-9)*gx,i=0;x<=xmax+1e-9&&i<200;x+=gx,i++){
+      c.beginPath();c.moveTo(X(x),0);c.lineTo(X(x),H);c.stroke();
+      if(sp>26&&Math.abs(x)>1e-9){c.textAlign="center";c.fillText(fmt(x),X(x),Math.min(H-3,Math.max(10,Y(0)+11)))}
+    }
+  }
+  if(gy>0&&(ymax-ymin)/gy<=100){
+    const sp=gy/(ymax-ymin)*H;
+    for(let y=Math.ceil(ymin/gy-1e-9)*gy,i=0;y<=ymax+1e-9&&i<200;y+=gy,i++){
+      c.beginPath();c.moveTo(0,Y(y));c.lineTo(W,Y(y));c.stroke();
+      if(sp>18&&Math.abs(y)>1e-9){c.textAlign="left";c.fillText(fmt(y),Math.min(W-26,Math.max(2,X(0)+3)),Y(y)-2)}
+    }
+  }
+  c.strokeStyle=cssv("--axis");c.lineWidth=1.5;
+  if(xmin<=0&&xmax>=0){c.beginPath();c.moveTo(X(0),0);c.lineTo(X(0),H);c.stroke()}
+  if(ymin<=0&&ymax>=0){c.beginPath();c.moveTo(0,Y(0));c.lineTo(W,Y(0));c.stroke()}
+  const f=makeFns();
+  if(S.fn.draw&&f.F1){
+    c.strokeStyle=cssv("--curve");c.lineWidth=2;c.beginPath();let pen=false;
+    for(let i=0;i<=400;i++){
+      const x=xmin+(xmax-xmin)*i/400;let y;
+      try{y=ev(f.F1,{decl:{x:"NOMBRE"},val:{x},fns:{}})}catch(e){y=NaN}
+      if(typeof y!=="number"||!Number.isFinite(y)||Math.abs(Y(y))>1e5){pen=false;continue}
+      if(!pen){c.moveTo(X(x),Y(y));pen=true}else c.lineTo(X(x),Y(y));
+    }
+    c.stroke();
+  }
+  if(g){
+    c.strokeStyle=cssv("--ac");c.lineWidth=2;
+    for(const s of g.seg){c.beginPath();c.moveTo(X(s[0]),Y(s[1]));c.lineTo(X(s[2]),Y(s[3]));c.stroke()}
+    c.fillStyle=cssv("--ac");
+    for(const q of g.pts){c.beginPath();c.arc(X(q[0]),Y(q[1]),3.5,0,7);c.fill()}
+  }
+}
+
+/* ---------- interface : onglets ---------- */
+let cur="alg";
+function show(t){
+  cur=t;
+  document.querySelectorAll(".tab").forEach(e=>e.classList.toggle("on",e.id==="t-"+t));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+  window.scrollTo(0,0);
+  if(t==="fn")drawGraph($("cvF"),null);
+  if(t==="run"){renderRun()}
+}
+$("nav").addEventListener("click",e=>{const b=e.target.closest("button");if(b)show(b.dataset.t)});
+
+/* ---------- onglet Variables ---------- */
+const RESERVED=new Set(["LIRE","AFFICHER","AFFICHERCALCUL","PREND_LA_VALEUR","SI","SINON","ALORS","TANT_QUE","FAIRE","POUR","ALLANT_DE","A","PAUSE","ET","OU","PI","F1","SANS_RETOUR","NOMBRE","CHAINE","LISTE"]);
+function renderVars(){
+  const el=$("vList");
+  if(!S.vars.length){el.innerHTML='<p class="hint">Aucune variable. Ajoutez-en une ci-dessus.</p>';return}
+  el.innerHTML=S.vars.map((v,i)=>'<div class="vr"><span class="n">'+esc(v.name)+'</span><span class="t">EST_DU_TYPE '+v.type+'</span><button data-i="'+i+'" aria-label="Supprimer">🗑</button></div>').join("");
+}
+$("vAdd").onclick=()=>{
+  const n=$("vName").value.trim(),t=$("vType").value,e=$("vErr");
+  if(!/^[A-Za-z_][A-Za-z0-9_]*$/.test(n)){e.textContent="Nom invalide : lettres, chiffres et _ ; il ne commence pas par un chiffre.";return}
+  if(RESERVED.has(n)||/^(DEBUT_|FIN_|ALGOBOX_)/.test(n)||F[n]||LF[n]){e.textContent="« "+n+" » est un mot réservé.";return}
+  if(S.vars.some(v=>v.name===n)){e.textContent="Cette variable existe déjà.";return}
+  e.textContent="";S.vars.push({name:n,type:t});$("vName").value="";renderVars();save();
+};
+$("vName").addEventListener("keydown",e=>{if(e.key==="Enter")$("vAdd").click()});
+$("vList").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  S.vars.splice(+b.dataset.i,1);renderVars();save();
+});
+
+/* ---------- onglet Fonction ---------- */
+function syncFn(){
+  $("fExpr").value=S.fn.expr||"";$("fDraw").checked=!!S.fn.draw;
+  for(const k of["xmin","xmax","ymin","ymax","gx","gy"])$("w-"+k).value=S.win[k];
+  checkFn();
+}
+function checkFn(){
+  const f=makeFns();
+  $("fErr").textContent=f.err?"Expression invalide : "+f.err.message:"";
+}
+$("fExpr").oninput=e=>{S.fn.expr=e.target.value;checkFn();drawGraph($("cvF"),null);save()};
+$("fDraw").onchange=e=>{S.fn.draw=e.target.checked;drawGraph($("cvF"),null);save()};
+for(const k of["xmin","xmax","ymin","ymax","gx","gy"]){
+  $("w-"+k).oninput=e=>{
+    const v=parseFloat(e.target.value.replace(",","."));
+    if(!Number.isNaN(v)){S.win[k]=v;drawGraph($("cvF"),null);save()}
+  };
+}
+
+/* ---------- onglet Algorithme ---------- */
+const TPL=[
+  ["LIRE","LIRE §"],["AFFICHER","AFFICHER §"],["PREND_LA_VALEUR","§ PREND_LA_VALEUR "],
+  ["SI","SI (§) ALORS\nDEBUT_SI\n\nFIN_SI"],
+  ["SI/SINON","SI (§) ALORS\nDEBUT_SI\n\nFIN_SI\nSINON\nDEBUT_SINON\n\nFIN_SINON"],
+  ["TANT_QUE","TANT_QUE (§) FAIRE\nDEBUT_TANT_QUE\n\nFIN_TANT_QUE"],
+  ["POUR","POUR § ALLANT_DE 1 A 10\nDEBUT_POUR\n\nFIN_POUR"],
+  ["//","//§"],["PAUSE","PAUSE"],["TRACER_POINT","TRACER_POINT (§,)"],["TRACER_SEGMENT","TRACER_SEGMENT (§,)->(,)"]
+];
+const ta=$("code");
+$("tools").innerHTML=TPL.map((t,i)=>'<button data-i="'+i+'">'+esc(t[0])+'</button>').join("");
+function gutter(){
+  const n=ta.value.split("\n").length;
+  let s="";for(let i=1;i<=n;i++)s+=i+"\n";
+  $("gut").textContent=s;$("gut").scrollTop=ta.scrollTop;
+}
+ta.addEventListener("input",()=>{S.code=ta.value;gutter();save()});
+ta.addEventListener("scroll",()=>{$("gut").scrollTop=ta.scrollTop});
+$("tools").addEventListener("mousedown",e=>e.preventDefault());
+$("tools").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  let tpl=TPL[+b.dataset.i][1];
+  if(!tpl.includes("§"))tpl+="§";
+  const v=ta.value,pos=ta.selectionEnd;
+  const ls=v.lastIndexOf("\n",pos-1)+1;
+  let le=v.indexOf("\n",pos);if(le<0)le=v.length;
+  const line=v.slice(ls,le);
+  let nv;
+  if(line.trim()==="")nv=v.slice(0,ls)+tpl+v.slice(le);
+  else nv=v.slice(0,le)+"\n"+tpl+v.slice(le);
+  nv=tidy(nv);
+  const idx=nv.indexOf("§");
+  nv=nv.replace("§","");
+  ta.value=nv;S.code=nv;gutter();save();
+  ta.focus();ta.setSelectionRange(idx,idx);
+});
+$("bTidy").onclick=()=>{ta.value=tidy(ta.value);S.code=ta.value;gutter();save()};
+$("bGo").onclick=()=>{show("run");startRun(false)};
+
+/* ---------- exécution : pilote ---------- */
+let R=null;
+function startRun(step){
+  stopRun(true);
+  const out={text:"",lines:0};
+  R={step,done:false,waiting:null,feed:undefined,line:null,bad:null,out:"",g:{pts:[],seg:[]},steps:0,gen:null,env:null,timer:null,res:null};
+  try{
+    const f=makeFns();
+    if(f.err)throw err("La fonction F1 est invalide : "+f.err.message,null);
+    const ast=compile(S.code);
+    R.env=makeEnv();
+    const ctx={steps:0,max:3000000,g:R.g,print:(t,nl)=>{if(R.out.length<300000)R.out+=t+(nl?"\n":"")}};
+    R.gen=execBlock(ast,R.env,ctx);
+    R.out="*** Algorithme lancé ***\n";
+  }catch(e){fail(e);return}
+  renderRun();
+  pump();
+}
+function fail(e){
+  if(!(e instanceof AErr)){e=err("Erreur interne : "+e.message,null)}
+  if(!R)R={step:false,done:true,waiting:null,out:"",g:{pts:[],seg:[]},env:null};
+  R.done=true;R.waiting=null;R.bad=e.line;R.error=e;
+  renderRun();
+}
+function stopRun(silent){
+  if(R&&R.timer)clearTimeout(R.timer);
+  if(R&&!R.done&&!silent){R.done=true;R.waiting=null;R.out+="*** Algorithme interrompu ***\n";renderRun()}
+  else if(silent)R=null;
+}
+function pump(){
+  if(!R||R.done||R.waiting)return;
+  const t0=performance.now();
+  try{
+    for(;;){
+      const r=R.gen.next(R.feed);R.feed=undefined;
+      if(r.done){R.done=true;R.line=null;R.out+="*** Algorithme terminé ***\n";break}
+      const v=r.value;
+      if(v.t==="step"){
+        R.line=v.line;
+        if(R.step){R.waiting="step";break}
+      }else if(v.t==="read"){R.waiting="read";R.req=v;break}
+      else if(v.t==="pause"){R.waiting="pause";break}
+      if(performance.now()-t0>14){R.timer=setTimeout(pump,0);break}
+    }
+  }catch(e){fail(e);return}
+  renderRun();
+}
+function renderRun(){
+  const lst=$("lst");
+  const lines=S.code.split("\n");
+  lst.innerHTML=lines.map((l,i)=>{
+    const n=i+1,c=R&&R.bad===n?"bad":(R&&R.line===n&&!R.done?"cur":"");
+    return'<div class="'+c+'"><i>'+n+'</i>'+esc(l)+"</div>";
+  }).join("");
+  const hl=lst.querySelector(".cur,.bad");
+  if(hl)lst.scrollTop=Math.max(0,hl.offsetTop-lst.clientHeight/2);
+  let o=esc(R?R.out:"");
+  if(R&&R.error)o+='<span class="err">Erreur'+(R.error.line?" (ligne "+R.error.line+")":"")+" : "+esc(R.error.message)+"</span>\n";
+  if(!R)o='<span style="color:var(--mut)">Appuie sur ▶ Lancer pour exécuter l\'algorithme.</span>';
+  const po=$("out");po.innerHTML=o;po.scrollTop=po.scrollHeight;
+  const rows=[];
+  if(R&&R.env){
+    for(const v of S.vars){
+      let val;
+      if(v.type==="LISTE"){
+        const o=R.env.val[v.name],ks=Object.keys(o).map(Number).sort((a,b)=>a-b);
+        val=ks.length?ks.slice(0,30).map(k=>"["+k+"]="+fmt(o[k])).join("  ")+(ks.length>30?" … ("+ks.length+" éléments)":""):"vide";
+      }else{
+        const x=R.env.val[v.name];val=x===undefined?"—":(v.type==="CHAINE"?'"'+x+'"':fmt(x));
+      }
+      rows.push("<tr><td>"+esc(v.name)+"</td><td>"+esc(val)+"</td></tr>");
+    }
+  }
+  $("vars").innerHTML=rows.join("")||'<tr><td style="font-weight:400;color:var(--mut)">Aucune variable à afficher.</td></tr>';
+  const live=R&&!R.done;
+  $("rRead").style.display=live&&R.waiting==="read"?"block":"none";
+  $("rPause").style.display=live&&R.waiting==="pause"?"flex":"none";
+  if(live&&R.waiting==="read"&&$("rRead").dataset.k!==String(R.steps)+R.req.name+R.out.length){
+    $("rRead").dataset.k=String(R.steps)+R.req.name+R.out.length;
+    $("rLbl").textContent="Entrer la valeur de "+R.req.name+" :"+(R.req.type==="CHAINE"?" (texte)":"");
+    $("rIn").value="";$("rIn").inputMode=R.req.type==="CHAINE"?"text":"decimal";$("rErr").textContent="";
+    setTimeout(()=>$("rIn").focus(),30);
+  }
+  $("rStep").textContent=live&&R.step?"Suivant ›":"Pas à pas";
+  $("rStop").disabled=!live;
+  if(cur==="run")drawGraph($("cvR"),R?R.g:null);
+}
+$("rGo").onclick=()=>startRun(false);
+$("rStep").onclick=()=>{
+  if(R&&!R.done&&R.step){if(R.waiting==="step"){R.waiting=null;pump()}}
+  else startRun(true);
+};
+$("rStop").onclick=()=>stopRun(false);
+$("rCont").onclick=()=>{if(R&&R.waiting==="pause"){R.waiting=null;pump()}};
+function submitRead(){
+  if(!R||R.waiting!=="read")return;
+  let raw=$("rIn").value.trim(),v;
+  if(R.req.type==="CHAINE")v=raw;
+  else{
+    raw=raw.replace(",",".");
+    if(!/^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(raw)){$("rErr").textContent="Ce n'est pas un nombre. Exemple : 12 ou 3.5";return}
+    v=parseFloat(raw);
+  }
+  R.feed=v;R.waiting=null;R.steps++;
+  pump();
+}
+$("rOk").onclick=submitRead;
+$("rIn").addEventListener("keydown",e=>{if(e.key==="Enter")submitRead()});
+
+/* ---------- fenêtre modale, exemples, code complet ---------- */
+function openModal(html){$("mbox").innerHTML=html;$("modal").classList.add("on")}
+function closeModal(){$("modal").classList.remove("on")}
+$("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
+let undoState=null,toastT=null;
+function toast(msg,undo){
+  $("toastT").textContent=msg;$("toastB").style.display=undo?"":"none";
+  $("toast").style.display="flex";clearTimeout(toastT);
+  toastT=setTimeout(()=>{$("toast").style.display="none"},6000);
+}
+$("toastB").onclick=()=>{if(undoState){S=undoState;undoState=null;loadAll();save()}$("toast").style.display="none"};
+$("bEx").onclick=()=>{
+  openModal('<h3 style="margin:0 0 10px">Exemples</h3>'+EX.map((e,i)=>'<button class="ex" data-i="'+i+'">'+esc(e.name)+"</button>").join("")+'<p class="hint">Charger un exemple remplace l\'algorithme actuel (un bouton Annuler apparaît).</p><button style="width:100%" id="mClose">Fermer</button>');
+  $("mClose").onclick=closeModal;
+  $("mbox").onclick=e=>{
+    const b=e.target.closest(".ex");if(!b)return;
+    undoState=JSON.parse(JSON.stringify(S));
+    S=fromEx(EX[+b.dataset.i]);stopRun(true);loadAll();save();closeModal();show("alg");
+    toast("Exemple chargé : "+EX[+b.dataset.i].name,true);
+  };
+};
+function fullCode(){
+  let s="VARIABLES\n"+S.vars.map(v=>"  "+v.name+" EST_DU_TYPE "+v.type).join("\n")+"\n";
+  if(S.fn.expr&&S.fn.expr.trim())s+="FONCTIONS_UTILISEES\n  F1(x)="+S.fn.expr.trim()+"\n";
+  s+="DEBUT_ALGORITHME\n"+tidy(S.code).split("\n").map(l=>l?"  "+l:"").join("\n")+"\nFIN_ALGORITHME\n";
+  return s;
+}
+function parseFull(txt){
+  const lines=txt.replace(/\r/g,"").split("\n");
+  const vars=[];let fn=null,body=[],sec="";
+  for(const raw of lines){
+    const s=raw.trim();
+    if(s==="VARIABLES"){sec="v";continue}
+    if(s==="FONCTIONS_UTILISEES"){sec="f";continue}
+    if(s==="DEBUT_ALGORITHME"){sec="a";continue}
+    if(s==="FIN_ALGORITHME"){sec="";continue}
+    if(sec==="v"&&s){
+      const m=/^([A-Za-z_]\w*)\s+EST_DU_TYPE\s+(NOMBRE|CHAINE|LISTE)$/.exec(s);
+      if(m)vars.push({name:m[1],type:m[2]});
+    }else if(sec==="f"&&s){
+      const m=/^F1\s*\(\s*x\s*\)\s*=\s*(.+)$/.exec(s);if(m)fn=m[1];
+    }else if(sec==="a")body.push(raw);
+  }
+  if(!body.length&&!vars.length)return null;
+  return{vars,fn,code:tidy(body.join("\n"))};
+}
+$("bCode").onclick=()=>{
+  openModal('<h3 style="margin:0 0 6px">Code complet</h3><p class="hint" style="margin:0 0 8px">Copie ce texte pour le partager, ou colle un code AlgoBox puis appuie sur « Importer ».</p><textarea id="mTa" spellcheck="false" autocapitalize="off"></textarea><div id="mMsg" class="hint"></div><div class="row" style="margin-top:8px"><button class="g" id="mCopy">Copier</button><button class="g" id="mImp">Importer</button><button class="g" id="mClose">Fermer</button></div>');
+  $("mTa").value=fullCode();
+  $("mClose").onclick=closeModal;
+  $("mCopy").onclick=async()=>{
+    const t=$("mTa");let ok=false;
+    try{await navigator.clipboard.writeText(t.value);ok=true}catch(e){}
+    if(!ok){try{t.select();ok=document.execCommand("copy")}catch(e){}}
+    $("mMsg").textContent=ok?"Copié.":"Copie impossible ici : sélectionne le texte et copie-le à la main.";
+  };
+  $("mImp").onclick=()=>{
+    const r=parseFull($("mTa").value);
+    if(!r){$("mMsg").textContent="Code non reconnu : il faut VARIABLES, DEBUT_ALGORITHME et FIN_ALGORITHME.";return}
+    undoState=JSON.parse(JSON.stringify(S));
+    S.vars=r.vars;if(r.fn!==null)S.fn.expr=r.fn;S.code=r.code;
+    stopRun(true);loadAll();save();closeModal();show("alg");toast("Code importé",true);
+  };
+};
+
+function loadAll(){renderVars();syncFn();ta.value=S.code;gutter()}
+loadAll();
+show("alg");
+window.addEventListener("resize",()=>{if(cur==="fn")drawGraph($("cvF"),null);if(cur==="run")drawGraph($("cvR"),R?R.g:null)});
+</script>
+</body>
+</html>
