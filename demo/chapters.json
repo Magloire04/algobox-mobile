@@ -1,0 +1,71 @@
+{
+  "video": "algobox-mobile-demo.mp4",
+  "duration": 195,
+  "chapters": [
+    {
+      "start": 0,
+      "title": "Introduction",
+      "text": "AlgoBox Mobile permet d'écrire, de tester et d'enregistrer des algorithmes sur son téléphone, avec la syntaxe d'AlgoBox."
+    },
+    {
+      "start": 4.3,
+      "title": "L'écran principal",
+      "text": "En haut, l'arbre de l'algorithme. En bas, les onglets d'opérations pour ajouter des instructions."
+    },
+    {
+      "start": 9.4,
+      "title": "Déclarer les variables",
+      "text": "« Déclarer nouvelle variable » : on choisit un nom et un type (NOMBRE, CHAINE ou LISTE)."
+    },
+    {
+      "start": 26.3,
+      "title": "Lire une valeur",
+      "text": "On sélectionne DEBUT_ALGORITHME, puis « Ajouter LIRE variable » : la valeur de N sera demandée au lancement."
+    },
+    {
+      "start": 36.8,
+      "title": "Affecter une valeur",
+      "text": "« AFFECTER valeur à variable » : la variable somme prend la valeur 0."
+    },
+    {
+      "start": 46,
+      "title": "Une boucle POUR",
+      "text": "« Ajouter POUR...DE...A » : i va de 1 à N. Les instructions répétées se placent entre DEBUT_POUR et FIN_POUR."
+    },
+    {
+      "start": 64.6,
+      "title": "Afficher le résultat",
+      "text": "Sur la ligne FIN_POUR : « Ajouter AFFICHER Message », puis « Ajouter AFFICHER Variable »."
+    },
+    {
+      "start": 80.5,
+      "title": "Tester l'algorithme",
+      "text": "« Tester » ouvre la fenêtre de test. « Lancer Algorithme », puis on saisit la valeur de N dans la console."
+    },
+    {
+      "start": 94.5,
+      "title": "Le mode pas à pas",
+      "text": "Avec « Mode pas à pas », l'algorithme s'arrête à chaque étape et montre la valeur des variables. « Continuer » avance d'une étape."
+    },
+    {
+      "start": 121.6,
+      "title": "Enregistrer",
+      "text": "Menu ☰ > « Sauver sous » : l'algorithme est enregistré sur le téléphone, dans « Mes algorithmes »."
+    },
+    {
+      "start": 134.5,
+      "title": "Un exemple avec un graphique",
+      "text": "Menu ☰ > « Ouvrir un exemple » : ici, une valeur approchée de π obtenue en plaçant des points au hasard."
+    },
+    {
+      "start": 158.3,
+      "title": "Le mode éditeur de texte",
+      "text": "Menu ☰ > « Mode éditeur texte » : on écrit le code directement, et « Vérifier code » contrôle la syntaxe."
+    },
+    {
+      "start": 173.6,
+      "title": "Installer l'application",
+      "text": "Android : menu ⋮ > « Installer l'application ». iPhone : Partager > « Sur l'écran d'accueil ». Elle marche ensuite sans connexion."
+    }
+  ]
+}
