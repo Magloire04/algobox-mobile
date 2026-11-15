@@ -28,18 +28,9 @@ module.exports = [
     },
   },
   {
-    files: [
-      'js/app.js',
-      'js/commandPalette.js',
-      'js/domHelpers.js',
-      'js/exporters.js',
-      'js/fileStorage.js',
-      'js/helpContent.js',
-      'js/instructionDialogs.js',
-      'js/testWindow.js',
-      'js/textEditor.js',
-      'js/treeView.js',
-    ],
+    // Modules de l'interface : tous les fichiers de js/ sauf le moteur et les exemples (scripts classiques).
+    files: ['js/**/*.js'],
+    ignores: ['js/algoEngine.js', 'js/exampleLibrary.js'],
     languageOptions: {
       sourceType: 'module',
       globals: { AlgoEngine: 'readonly', AlgoExamples: 'readonly' },

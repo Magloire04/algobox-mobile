@@ -16,6 +16,7 @@ AddDefaultCharset utf-8
 AddType application/manifest+json .webmanifest
 AddType text/javascript .js
 AddType image/svg+xml .svg
+AddType video/mp4 .mp4
 AddCharset utf-8 .html .css .js .webmanifest .svg
 
 <IfModule mod_headers.c>
@@ -32,7 +33,7 @@ AddCharset utf-8 .html .css .js .webmanifest .svg
   <FilesMatch "\.(html|js|css|webmanifest)$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
-  <FilesMatch "\.(png|svg)$">
+  <FilesMatch "\.(png|svg|jpg|mp4)$">
     Header set Cache-Control "public, max-age=604800"
   </FilesMatch>
 </IfModule>

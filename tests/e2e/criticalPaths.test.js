@@ -5,36 +5,11 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const http = require('node:http');
-const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require('playwright');
+const { startStaticServer } = require('../../tools/staticServer.js');
 
 const ROOT_DIRECTORY = path.resolve(__dirname, '..', '..');
-const CONTENT_TYPES = {
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.webmanifest': 'application/manifest+json',
-  '.png': 'image/png',
-  '.svg': 'image/svg+xml',
-};
-
-// Petit serveur statique limité au dossier du projet.
-function startStaticServer() {
-  const server = http.createServer((request, response) => {
-    const requestedPath = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
-    const filePath = path.resolve(ROOT_DIRECTORY, '.' + (requestedPath.endsWith('/') ? requestedPath + 'index.html' : requestedPath));
-    if (!filePath.startsWith(ROOT_DIRECTORY + path.sep) || !fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
-      response.writeHead(404);
-      response.end();
-      return;
-    }
-    response.writeHead(200, { 'Content-Type': CONTENT_TYPES[path.extname(filePath)] || 'application/octet-stream' });
-    fs.createReadStream(filePath).pipe(response);
-  });
-  return new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(server)));
-}
 
 test.describe('parcours critiques', () => {
   let server;
@@ -42,8 +17,7 @@ test.describe('parcours critiques', () => {
   let baseUrl;
 
   test.before(async () => {
-    server = await startStaticServer();
-    baseUrl = 'http://127.0.0.1:' + server.address().port + '/';
+    ({ server, url: baseUrl } = await startStaticServer(ROOT_DIRECTORY));
     browser = await chromium.launch();
   });
 
@@ -79,6 +53,19 @@ test.describe('parcours critiques', () => {
     await page.locator('.console__input').press('Enter');
     await page.waitForFunction(() => document.getElementById('console').textContent.includes('terminé'));
     assert.match(await page.locator('#console').innerText(), /Entrer n : 21\s+42/);
+    assert.deepEqual(pageErrors, []);
+    await context.close();
+  });
+
+  test('la section Démo présente la vidéo et ses chapitres', async () => {
+    const { context, page, pageErrors } = await openApplication();
+    await page.locator('#demoViewTab').click();
+    await page.locator('.demo-chapter').first().waitFor();
+    assert.ok((await page.locator('.demo-chapter').count()) >= 10);
+    assert.equal(await page.locator('#demoVideo source').getAttribute('src'), 'demo/algobox-mobile-demo.mp4');
+    assert.equal(await page.locator('#algorithmView').isHidden(), true);
+    await page.locator('#algorithmViewTab').click();
+    assert.equal(await page.locator('#demoView').isHidden(), true);
     assert.deepEqual(pageErrors, []);
     await context.close();
   });

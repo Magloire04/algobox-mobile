@@ -73,6 +73,17 @@ Ces différences ne changent pas le résultat des algorithmes valides. Elles cor
 
 **Pourquoi.** Apache définit par défaut un alias global `/icons/` (icônes des listes de dossiers), que beaucoup d'hébergeurs conservent. Les icônes de l'application y étaient introuvables (erreur 404), ce qui empêche l'installation sur téléphone. Le cache du service worker passe en version 2 pour que les appareils déjà installés suivent le changement.
 
+## 2026-11-15 — Vidéo de démonstration (issue #8)
+
+**Décision.** La section « Démo » diffuse une vidéo MP4 (H.264) enregistrée automatiquement à partir de l'application par `tools/demo/recordDemo.js`. La vidéo est versionnée dans `demo/`, n'est téléchargée qu'au moment de la lecture (`preload="none"`) et n'est pas mise en cache par le service worker.
+
+**Pourquoi.**
+
+- H.264 est lu par tous les téléphones (Chrome sur Android, Safari sur iPhone). Le Chromium utilisé pour les tests ne lit pas ce format : la lecture se vérifie sur un vrai téléphone.
+- Enregistrer la vidéo par script la rend reproductible : elle se régénère en une commande quand l'interface change.
+- Les vidéos sont lues par requêtes partielles (`Range`). Les servir depuis le cache du service worker empêche Safari de les lire ; la vidéo demande donc une connexion. Les chapitres et l'image d'aperçu sont, eux, disponibles hors ligne.
+- Accessibilité : les légendes sont incrustées dans la vidéo et le texte de chaque chapitre est affiché sous le lecteur.
+
 ## Hors périmètre de la première livraison
 
 - Export au format ODF.

@@ -84,6 +84,16 @@ puis ouvrir `http://localhost:8000`.
 
 Modifier `CACHE_VERSION` dans `serviceWorker.js` pour que les appareils déjà installés récupèrent la nouvelle version.
 
+## Vidéo de démonstration
+
+L'onglet « Démo » de l'application présente une vidéo tutoriel, avec des chapitres cliquables qui servent aussi de transcription. Elle est enregistrée automatiquement en pilotant l'application (légende à chaque étape, repère à chaque appui) :
+
+```bash
+npm run demo:record
+```
+
+La commande demande Playwright, Chromium et ffmpeg. Elle produit `demo/algobox-mobile-demo.mp4` (H.264, lisible sur Android et iPhone), `demo/poster.jpg` et `demo/chapters.json`. Les scènes sont décrites dans `tools/demo/recordDemo.js` : à relancer quand l'interface change, puis changer `CACHE_VERSION` dans `serviceWorker.js`.
+
 ## Déploiement
 
 L'application est publiée sur <https://algobox-mobile.bytechnum.com>.

@@ -4,6 +4,7 @@ import { createElement, openDialog, showMessage, askConfirmation, askText, showT
 import { TreeView } from './treeView.js';
 import { TextEditor } from './textEditor.js';
 import { TestWindow } from './testWindow.js';
+import { DemoView } from './demoView.js';
 import * as dialogs from './instructionDialogs.js';
 import * as storage from './fileStorage.js';
 import * as exporters from './exporters.js';
@@ -46,6 +47,8 @@ const elements = {
   presentationView: document.getElementById('presentationView'),
   algorithmViewTab: document.getElementById('algorithmViewTab'),
   presentationViewTab: document.getElementById('presentationViewTab'),
+  demoView: document.getElementById('demoView'),
+  demoViewTab: document.getElementById('demoViewTab'),
   descriptionInput: document.getElementById('descriptionInput'),
   parameterList: document.getElementById('parameterList'),
   buttons: {
@@ -927,13 +930,22 @@ async function changeExecutionSettings() {
   renderPresentation();
 }
 
+const demoView = new DemoView();
+
+// Trois vues : « algorithm » (arbre), « presentation » (cadre Présentation) et « demo ».
 function showView(view) {
-  const isPresentation = view === 'presentation';
-  elements.algorithmView.hidden = isPresentation;
-  elements.presentationView.hidden = !isPresentation;
-  elements.algorithmViewTab.setAttribute('aria-selected', String(!isPresentation));
-  elements.presentationViewTab.setAttribute('aria-selected', String(isPresentation));
-  if (isPresentation) renderPresentation();
+  const views = [
+    { name: 'algorithm', panel: elements.algorithmView, tab: elements.algorithmViewTab },
+    { name: 'presentation', panel: elements.presentationView, tab: elements.presentationViewTab },
+    { name: 'demo', panel: elements.demoView, tab: elements.demoViewTab },
+  ];
+  views.forEach(({ name, panel, tab }) => {
+    panel.hidden = name !== view;
+    tab.setAttribute('aria-selected', String(name === view));
+  });
+  if (view === 'presentation') renderPresentation();
+  if (view === 'demo') demoView.show();
+  else demoView.hide();
 }
 
 function applyTheme() {
@@ -1030,6 +1042,7 @@ function openMenu() {
     item('Configurer exécution des algorithmes', changeExecutionSettings),
     section('Aide'),
     item('Aide', () => openDialog({ title: 'Aide', body: renderGeneralHelp(), actions: [{ label: 'Fermer', value: null, isPrimary: true }] })),
+    item('Démo vidéo (tutoriel)', () => showView('demo')),
     item('Tutoriel en ligne', () => window.open('https://www.xm1math.net/algobox/tutoalgobox/index.html', '_blank', 'noopener')),
     item("À propos d'AlgoBox Mobile", showAbout),
     isStandalone() ? null : section('Application'),
@@ -1110,6 +1123,7 @@ function bindEvents() {
   buttons.changeSettings.addEventListener('click', changeExecutionSettings);
   elements.algorithmViewTab.addEventListener('click', () => showView('algorithm'));
   elements.presentationViewTab.addEventListener('click', () => showView('presentation'));
+  elements.demoViewTab.addEventListener('click', () => showView('demo'));
   elements.descriptionInput.addEventListener('input', () => {
     state.algorithm.description = elements.descriptionInput.value;
     markModified({ isTreeChanged: false });
