@@ -995,7 +995,7 @@ function openMenu() {
   const section = (title) => createElement('p', { className: 'drawer__section', text: title });
   const capabilities = getCapabilities();
   const drawer = createElement('nav', { className: 'drawer', role: 'menu', 'aria-label': 'Menu principal' }, [
-    createElement('div', { className: 'drawer__brand' }, [createElement('img', { src: 'icons/icon-192.png', alt: '' }), 'AlgoBox']),
+    createElement('div', { className: 'drawer__brand' }, [createElement('img', { src: 'app-icons/icon-192.png', alt: '' }), 'AlgoBox']),
     section('Fichier'),
     item('Nouveau', createNewAlgorithm),
     item('Ouvrir…', openFromDevice),

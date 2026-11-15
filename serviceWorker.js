@@ -1,7 +1,7 @@
 // Service worker : met l'application en cache pour qu'elle fonctionne hors ligne.
 // Changer CACHE_VERSION à chaque livraison pour renouveler le cache.
 
-const CACHE_VERSION = 'algobox-mobile-v1';
+const CACHE_VERSION = 'algobox-mobile-v2';
 const APP_SHELL = [
   './',
   'index.html',
@@ -19,11 +19,11 @@ const APP_SHELL = [
   'js/testWindow.js',
   'js/textEditor.js',
   'js/treeView.js',
-  'icons/icon.svg',
-  'icons/icon-192.png',
-  'icons/icon-512.png',
-  'icons/icon-maskable-512.png',
-  'icons/apple-touch-icon.png',
+  'app-icons/icon.svg',
+  'app-icons/icon-192.png',
+  'app-icons/icon-512.png',
+  'app-icons/icon-maskable-512.png',
+  'app-icons/apple-touch-icon.png',
 ];
 
 self.addEventListener('install', (event) => {
