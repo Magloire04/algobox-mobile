@@ -1,0 +1,100 @@
+name: Déploiement serveur
+
+# Publie l'application sur https://algobox-mobile.bytechnum.com à chaque fusion sur main.
+# Les informations de connexion sont dans les secrets du dépôt (voir README).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploiement-serveur
+  cancel-in-progress: false
+
+jobs:
+  verification:
+    name: Contrôles qualité
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+
+  deploiement:
+    name: Copie sur le serveur
+    runs-on: ubuntu-latest
+    needs: verification
+    environment:
+      name: production
+      url: https://algobox-mobile.bytechnum.com
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vérifier la configuration
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          missing=""
+          for name in DEPLOY_SSH_KEY DEPLOY_KNOWN_HOSTS DEPLOY_HOST DEPLOY_PORT DEPLOY_USER DEPLOY_PATH; do
+            if [ -z "${!name}" ]; then missing="$missing $name"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Secrets manquants :$missing (voir la section Déploiement du README)"
+            exit 1
+          fi
+
+      - name: Préparer la clé SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          # tr retire les retours chariot ajoutés si le secret a été copié depuis Windows.
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > ~/.ssh/deploiement
+          chmod 600 ~/.ssh/deploiement
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" | tr -d '\r' > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Préparer les fichiers publiés
+        run: |
+          mkdir _site
+          cp -r index.html manifest.webmanifest serviceWorker.js .htaccess css js app-icons _site/
+
+      - name: Copier sur le serveur
+        run: |
+          remote_shell="ssh -i $HOME/.ssh/deploiement -p $DEPLOY_PORT -o StrictHostKeyChecking=yes -o BatchMode=yes"
+          # Dossier relatif au compte : « ~/site/ » et « site » désignent le même dossier.
+          deploy_path="${DEPLOY_PATH#\~/}"
+          deploy_path="${deploy_path%/}"
+          target="$DEPLOY_USER@$DEPLOY_HOST:$deploy_path/"
+          $remote_shell "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p '$deploy_path'"
+          # Dossiers de l'application : remplacés à l'identique (fichiers obsolètes supprimés).
+          rsync -rlz --delete --itemize-changes -e "$remote_shell" _site/css _site/js _site/app-icons "$target"
+          # Fichiers à la racine : copiés sans toucher au reste du dossier (.well-known, etc.).
+          rsync -rlz --itemize-changes -e "$remote_shell" _site/index.html _site/manifest.webmanifest _site/serviceWorker.js _site/.htaccess "$target"
+
+      - name: Vérifier le site publié
+        run: |
+          sleep 5
+          curl --fail --silent --show-error --max-time 30 https://algobox-mobile.bytechnum.com/ | grep -q "AlgoBox Mobile"
+          curl --fail --silent --show-error --max-time 30 --head https://algobox-mobile.bytechnum.com/manifest.webmanifest | grep -i "content-type: application/manifest+json"
+          echo "Application publiée sur https://algobox-mobile.bytechnum.com"
+
+      - name: Effacer la clé SSH
+        if: always()
+        run: rm -f ~/.ssh/deploiement
