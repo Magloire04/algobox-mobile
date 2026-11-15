@@ -76,7 +76,7 @@ puis ouvrir `http://localhost:8000`.
 | `js/treeView.js`, `js/textEditor.js`, `js/testWindow.js`                | Arbre, mode texte, fenêtre de test                                                                                       |
 | `js/instructionDialogs.js`, `js/commandPalette.js`, `js/helpContent.js` | Boîtes de saisie des instructions et aide                                                                                |
 | `js/fileStorage.js`, `js/exporters.js`                                  | Enregistrement local, fichiers et exports                                                                                |
-| `serviceWorker.js`, `manifest.webmanifest`, `icons/`                    | Application installable et hors ligne                                                                                    |
+| `serviceWorker.js`, `manifest.webmanifest`, `app-icons/`                | Application installable et hors ligne                                                                                    |
 | `tests/unit/`, `tests/e2e/`                                             | Tests du moteur et des parcours critiques                                                                                |
 | `docs/decisions.md`                                                     | Décisions et écarts documentés                                                                                           |
 
@@ -84,9 +84,52 @@ puis ouvrir `http://localhost:8000`.
 
 Modifier `CACHE_VERSION` dans `serviceWorker.js` pour que les appareils déjà installés récupèrent la nouvelle version.
 
-### Mise en ligne avec GitHub Pages
+## Déploiement
 
-Le workflow `.github/workflows/deploy-pages.yml` publie l'application à chaque fusion sur `main`. Il faut l'activer une fois dans les réglages du dépôt : Settings > Pages > Source : « GitHub Actions ».
+L'application est publiée sur <https://algobox-mobile.bytechnum.com>.
+
+### Déploiement automatique sur le serveur
+
+Le workflow `.github/workflows/deploy-server.yml` se lance à chaque fusion sur `main`, ou à la demande (Actions > « Déploiement serveur » > Run workflow). Il :
+
+1. relance le linter et les tests unitaires ;
+2. copie l'application par SSH (rsync) dans le dossier du sous-domaine : les dossiers `css/`, `js/` et `app-icons/` sont remplacés à l'identique, les fichiers `index.html`, `manifest.webmanifest`, `serviceWorker.js` et `.htaccess` sont copiés, le reste du dossier n'est pas touché (par exemple `.well-known/`, utilisé pour le certificat HTTPS) ;
+3. vérifie que le site répond en HTTPS avec le bon type de fichier pour le manifeste.
+
+Le serveur doit servir le sous-domaine en HTTPS, avoir `rsync` et lire les fichiers `.htaccess` (Apache ou LiteSpeed).
+
+#### Secrets à créer
+
+Dans le dépôt : Settings > Secrets and variables > Actions > New repository secret. Aucune de ces informations ne doit apparaître dans le code.
+
+| Secret               | Contenu                                                                                            |
+| -------------------- | -------------------------------------------------------------------------------------------------- |
+| `DEPLOY_SSH_KEY`     | Clé privée SSH réservée au déploiement (contenu complet du fichier, lignes BEGIN et END comprises) |
+| `DEPLOY_KNOWN_HOSTS` | Empreinte du serveur, obtenue avec `ssh-keyscan -p <port> <adresse du serveur>`                    |
+| `DEPLOY_HOST`        | Adresse du serveur                                                                                 |
+| `DEPLOY_PORT`        | Port SSH                                                                                           |
+| `DEPLOY_USER`        | Compte SSH                                                                                         |
+| `DEPLOY_PATH`        | Dossier du sous-domaine, relatif au compte (par exemple `algobox-mobile.bytechnum.com`)            |
+
+#### Créer une clé réservée au déploiement
+
+Sur son ordinateur, créer une clé sans phrase de passe, utilisée uniquement par le workflow :
+
+```bash
+ssh-keygen -t ed25519 -N "" -C "deploiement algobox-mobile" -f ~/.ssh/algobox_mobile_deploiement
+```
+
+Autoriser la clé publique sur le serveur, avec la clé personnelle habituelle :
+
+```bash
+ssh-copy-id -i ~/.ssh/algobox_mobile_deploiement.pub -p <port> <compte>@<adresse du serveur>
+```
+
+Sur un hébergement cPanel, on peut aussi passer par « Accès SSH » > « Gérer les clés SSH » > « Importer une clé », puis autoriser la clé. Le contenu de `~/.ssh/algobox_mobile_deploiement` (la clé privée) va dans le secret `DEPLOY_SSH_KEY`.
+
+### Copie de secours sur GitHub Pages
+
+Le workflow `.github/workflows/deploy-pages.yml` publie aussi l'application sur GitHub Pages à chaque fusion sur `main` (réglage : Settings > Pages > Source : « GitHub Actions »).
 
 ## Crédits
 
